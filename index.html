@@ -1,66 +1,107 @@
-<!-- index.html -->
 <!DOCTYPE html>
-<html>
+<html   超文本标记语言>
 <head>
-  <title>留言板</title>
+  <title>留言板</title   标题>
   <style>
-    .message { margin: 10px 0; padding: 10px; border: 1px solid #ddd; }
-    #messageForm { margin: 20px 0; }
+    .message { 
+      margin: 10px 0; 
+      padding: 10px; 
+      border: 1px solid #ddd; 
+      border-radius: 4px; /* 增加圆角，优化视觉 */
+    }
+    #messageForm { 
+      margin: 20px 0; 
+      display: flex; 
+      flex-direction: column; 
+      gap: 10px; /* 输入项之间增加间距 */
+    }
+    #name { 
+      padding: 8px; 
+      width: 300px; 
+      border   脚本: 1px solid #ddd; 
+      border-radius: 4px;
+    }   脚本
+    #content { 
+      padding   常量: 8px; 
+      width   常量: 500px; 
+      height: 100px; 
+      border: 1px solid #ddd; 
+      border-radius: 4px;
+      resize: vertical; /* 允许垂直调整文本域大小 */
+    }
+    button { 
+      padding: 8px 16px; 
+      width: 100px; 
+      background-color: #008cba; 
+      color: white; 
+      border: none; 
+      border-radius: 4px; 
+      cursor: pointer;
+    }
+    button:hover { 
+      background-color: #006a8e; /* 按钮hover效果 */
+    }
   </style>
-</head>
-<body class="background">
+</head   头>
+<body   身体 class="background">
   <h1>留言板</h1>
-  <form id="messageForm">
-    <input type="text" id="name" placeholder="你的名字" required>
+  <form   形式 id="messageForm">
+    <input   输入 type="text" id="name"   “名称” placeholder   占位符="你的名字" required   要求>
     <textarea id="content" placeholder="留言内容" required></textarea>
-    <button type="submit">提交</button>
-  </form>
+    <button   按钮 type="submit">提交</button>
+  </form   形式>
   <div id="messages"></div>
 
-  // 引入 LeanCloud SDK
-<script src="https://cdn.jsdelivr.net/npm/leancloud-storage@4.13.0/dist/av-min.js"></script>
+  <!-- 引入 LeanCloud SDK -->
+  <script src="https://cdn.jsdelivr.net/npm/leancloud-storage@4.13.0/dist/av-min.js"></script   脚本>
 
-<script>
-  // 初始化 LeanCloud
-  const appId = "mv0CXsSCpCxNXCIL4q9cHxak-gzGzoHsz";
-  const appKey = "qxwAnFR6JrdscOAz376bZJ6P"; // 注意：这里用「应用 Keys」中的 App Key（不是 Master Key）
-  serverURL: "https://mv0cxssc.lc-cn-n1-shared.com"
-  AV.init({ appId, appKey, serverURL });
+  <script>
+    // 初始化 LeanCloud（修正配置语法）
+    const appId = "mv0CXsSCpCxNXCIL4q9cHxak-gzGzoHsz";
+    const appKey = "qxwAnFR6JrdscOAz376bZJ6P";
+    const serverURL = "https://mv0cxssc.lc-cn-n1-shared.com";
+    AV.init({ appId, appKey, serverURL });
 
-  // 加载已有留言
-  function loadMessages() {
-    const Message = AV.Object.extend('Message');
-    const query = new AV.Query(Message);
-    query.descending('createdAt'); // 按时间倒序
-    query.find().then(messages => {
-      const container = document.getElementById('messages');
-      container.innerHTML = messages.map(msg => `
-        <div class="message">
-          <strong>${msg.get('name')}</strong>
-          <p>${msg.get('content')}</p>
-          <small>${new Date(msg.createdAt).toLocaleString()}</small>
-        </div>
-      `).join('');
+    // 加载已有留言
+    function loadMessages() {
+      const Message = AV.Object.extend('Message');
+      const query = new AV.Query(Message);
+      query.descending('createdAt'); // 按时间倒序
+      query.find().then(messages => {
+        const container = document.getElementById('messages');
+        container.innerHTML = messages.map(msg => `
+          <div class="message">
+            <strong>${msg.get('name')}</strong>
+            <p>${msg.get('content')}</p>
+            <small>${new Date(msg.createdAt).toLocaleString()}</small>
+          </div>
+        `).join('');
+      }).catch(err => alert('加载留言失败：' + err.message)); // 增加加载失败捕获
+    }
+
+    // 提交新留言
+    document.getElementById('messageForm').addEventListener('submit', (e) => {
+      e.preventDefault();
+      const name = document.getElementById('name').value.trim();
+      const content = document.getElementById('content').value.trim();
+
+      // 简单验证，避免空内容
+      if (!name || !content) {
+        alert('名字和留言内容不能为空！');
+        return;
+      }
+
+      const Message = AV.Object.extend('Message');
+      const message = new Message();
+      message.save({ name, content }).then(() => {
+        alert('留言成功！');
+        document.getElementById('messageForm').reset();
+        loadMessages(); // 重新加载留言列表
+      }).catch(err => alert('提交失败：' + err.message));
     });
-  }
 
-  // 提交新留言
-  document.getElementById('messageForm').addEventListener('submit', (e) => {
-    e.preventDefault();
-    const name = document.getElementById('name').value;
-    const content = document.getElementById('content').value;
-
-    const Message = AV.Object.extend('Message');
-    const message = new Message();
-    message.save({ name, content }).then(() => {
-      alert('留言成功！');
-      document.getElementById('messageForm').reset();
-      loadMessages(); // 重新加载留言列表
-    }).catch(err => alert('提交失败：' + err.message));
-  });
-
-  // 页面加载时获取留言
-  loadMessages();
-</script>
+    // 页面加载时获取留言
+    loadMessages();
+  </script>
 </body>
 </html>
