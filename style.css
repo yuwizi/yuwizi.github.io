@@ -1,0 +1,17 @@
+/* 类选择器：为指定类的元素添加背景图片 */
+.background {
+  /* 引入图片（路径根据实际位置调整） */
+  background-image: url("image/Pasted image.png");
+  
+  /* 可选样式：优化背景显示效果 */
+  background-size: cover;       /* 图片覆盖容器，可能裁剪 */
+  /* 或 background-size: contain;  完整显示图片，可能留空白 */
+  
+  background-repeat: no-repeat; /* 不重复平铺 */
+  background-position: center;  /* 图片居中 */
+  background-attachment: scroll; /* 随内容滚动（默认），固定用 fixed */
+  
+  /* 可选：设置容器尺寸，确保背景可见 */
+  width: 100%;
+  min-height: 500px; /* 根据需求调整高度 */
+}
